@@ -44,4 +44,5 @@ require_once( ESWP_PLUGIN_DIR . '/includes/shortcodes.php' );
 // Only if is admin to limit bloat
 if ( is_admin() ) {
 	require_once( ESWP_PLUGIN_DIR . '/includes/admin/metaboxs.php' );
+	require_once( ESWP_PLUGIN_DIR . '/includes/admin/autoresponse.php' ); // Add-on $5
 }
