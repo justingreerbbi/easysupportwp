@@ -113,17 +113,18 @@ function eswp_ticket_replies_content( $post ) {
 		foreach ( $replies as $reply ):
 			$email_hash = md5( $reply->comment_author_email );
 			?>
-            <table class="widefat fixed striped comments wp-list-table comments-box eswp-reply-table">
+            <table class="widefat fixed striped comments wp-list-table comments-box eswp-reply-table <?php echo $reply->comment_type; ?>">
                 <tbody id="the-comment-list" data-wp-lists="list:comment">
                 <tr id="comment-304" class="custom-comment-class even thread-even depth-1">
                     <td class="author column-author eswp-column-author">
-                        <img src="https://www.gravatar.com/avatar/<?php echo $email_hash; ?>?s=75" width="75" style="border-radius: 50%;"/>
+                        <img src="https://www.gravatar.com/avatar/<?php echo $email_hash; ?>?s=75" width="75"
+                             style="border-radius: 50%;"/>
                         <strong style="display: inline-block;"><?php echo $reply->comment_author; ?></strong>
                     </td>
                     <td class="comment column-comment column-primary">
                         <small><?php print date( 'M jS, Y g:i:s A', strtotime( $reply->comment_date ) ); ?></small>
                         <hr/>
-						<?php print nl2br($reply->comment_content); ?>
+						<?php print nl2br( $reply->comment_content ); ?>
                     </td>
                 </tr>
                 </tbody>
@@ -134,7 +135,7 @@ function eswp_ticket_replies_content( $post ) {
     <hr/>
 
     <h1>Reply to Ticket</h1>
-    <p>use the form below to reply to the ticket.</p>
+    <p>Use the form below to reply to the ticket</p>
     <br/>
     <div id="eswp_main_ticket_reply_editor">
 		<?php wp_editor(
@@ -188,12 +189,12 @@ function easy_support_ticket_ticket_info_meta_box_content( $post ) {
         <div id="misc-publishing-actions">
             <div class="misc-pub-section">
                 Status: <span
-                        style="background: #44bd32; padding: 5px 10px; color: #fff; border-radius: 3px;">OPEN</span>
+                        style="background: #f1f1f1; padding: 5px 10px; border-radius: 3px;"><?php echo eswp_get_ticket_status( get_post_meta( $post->ID, 'ticket_status', true ) ); ?></span>
             </div>
 
             <div class="misc-pub-section">
 	            <span id="timestamp">
-                    Ticket Age: <strong>5 Mins</strong>
+                    Ticket Age: <strong><?php print eswp_date_diff(date( "F jS, Y g:i:s A", strtotime( $post->post_date ) ) ); ?></strong>
                 </span>
             </div>
             <div class="misc-pub-section">
@@ -269,8 +270,9 @@ function eswp_ticket_save_post_update( $post_id ) {
 		);
 		wp_insert_comment( $data );
 
-		// Change the ticket status
-
-		// Run after action here for a hook
+		/*
+		 * Set the ticket status to awaiting response from the customer.
+		 */
+		update_post_meta( $post_id, 'ticket_status', 'awaiting_response' );
 	}
 }

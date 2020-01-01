@@ -114,9 +114,9 @@ function simple_fep_add_post() {
 		global $current_user;
 
 		$user_id      = $current_user->ID;
-		$post_title   = $_POST['post-title'];
-		$post_content = nl2br($_POST['posttext']);
-		$tags         = $_POST['tags'];
+		$post_title   = sanitize_text_field( $_POST['post-title'] );
+		$post_content = sanitize_textarea_field( nl2br( $_POST['posttext'] ) );
+		$tags         = sanitize_text_field( $_POST['tags'] );
 
 		global $error_array;
 		$error_array = array();
@@ -130,18 +130,19 @@ function simple_fep_add_post() {
 
 		if ( count( $error_array ) == 0 ) {
 			$post_id = wp_insert_post( array(
-				'post_author'  => $user_id,
+				'post_author'  => $current_user->ID,
 				'post_title'   => $post_title,
 				'post_type'    => 'ticket',
 				'post_content' => $post_content,
 				'tags_input'   => $tags,
-				'post_status'  => 'publish'
+				'post_status'  => 'publish',
+				'meta_input'   => array(
+					'ticket_status' => 'new',
+					'creator_ip'    => sanitize_text_field( $_SERVER['REMOTE_ADDR'] )
+				)
 			) );
-
-			global $notice_array;
-			$notice_array   = array();
-			$notice_array[] = "Thank you for posting. Your post is now live. ";
-			add_action( 'simple-fep-notice', 'simple_fep_notices' );
+			wp_redirect( get_permalink( $post_id ) );
+			exit;
 		} else {
 			add_action( 'simple-fep-notice', 'simple_fep_errors' );
 		}
