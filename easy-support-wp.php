@@ -80,7 +80,7 @@ function eswp_admin_options_page() {
         <a href="#" class="page-title-action">View Documentation</a>
         <hr class="wp-header-end">
         <p class="description">
-           Manage Easy Support WP settings.
+            Manage Easy Support WP settings.
         </p>
         <form>
             <table class="form-table" role="presentation">
@@ -223,6 +223,35 @@ function eswp_rewrite_flush() {
 }
 
 register_activation_hook( __FILE__, 'eswp_rewrite_flush' );
+
+function eswp_submit_frontend_ticket_submission() {
+
+	// @todo Sanatize the input.
+	global $current_user;
+
+	$user_id      = $current_user->ID;
+	$post_title   = sanitize_text_field( $_POST['post-title'] );
+	$post_content = sanitize_textarea_field( nl2br( $_POST['posttext'] ) );
+	$tags         = sanitize_text_field( $_POST['tags'] );
+
+	$post_id = wp_insert_post( array(
+		'post_author'  => $current_user->ID,
+		'post_title'   => $post_title,
+		'post_type'    => 'ticket',
+		'post_content' => $post_content,
+		'tags_input'   => $tags,
+		'post_status'  => 'publish',
+		'meta_input'   => array(
+			'ticket_status' => 'new',
+			'creator_ip'    => sanitize_text_field( $_SERVER['REMOTE_ADDR'] )
+		)
+	) );
+	wp_redirect( get_permalink( $post_id ) );
+	exit;
+}
+
+//add_action( 'admin_post_nopriv_eswp_frontend_ticket_submission', 'eswp_submit_frontend_ticket_submission' );
+add_action( 'admin_post_eswp_frontend_ticket_submission', 'eswp_submit_frontend_ticket_submission' );
 
 
 /**
