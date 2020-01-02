@@ -16,17 +16,103 @@
 define( 'ESWP_PLUGIN_DIR', dirname( __FILE__ ) );
 
 function eswp_setup_post_types() {
+
+	$labels = array(
+		'name'               => __( 'Support Tickets', 'eswp' ),
+		'singular_name'      => __( 'Ticket', 'eswp' ),
+		'menu_name'          => __( 'Tickets', 'eswp' ),
+		'name_admin_bar'     => __( 'Tickets', 'eswp' ),
+		'add_new'            => __( 'Create New Ticket', 'textdomain' ),
+		'add_new_item'       => __( 'Create New Ticket', 'eswp' ),
+		'new_item'           => __( 'New Ticket', 'eswp' ),
+		'edit_item'          => __( 'Edit Ticket', 'eswp' ),
+		'view_item'          => __( 'View Ticket', 'eswp' ),
+		'all_items'          => __( 'All Tickets', 'eswp' ),
+		'search_items'       => __( 'Search Tickets', 'eswp' ),
+		'parent_item_colon'  => __( 'Parent Tickets:', 'eswp' ),
+		'not_found'          => __( 'No Tickets Found', 'eswp' ),
+		'not_found_in_trash' => __( 'No Tickets Found in Trash', 'eswp' ),
+	);
+
 	$args = array(
-		'public'    => true,
-		'label'     => __( 'Tickets', 'eswp' ),
-		'menu_icon' => 'dashicons-welcome-write-blog',
-		'supports'  => array( 'title' ),
+		'public'       => true,
+		'labels'       => $labels,
+		'menu_icon'    => 'dashicons-welcome-write-blog',
+		'supports'     => array( 'title' ),
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'query_var'    => true,
 		//'show_in_rest' => true,
 	);
 	register_post_type( 'ticket', $args );
 }
 
 add_action( 'init', 'eswp_setup_post_types' );
+
+function books_register_ref_page() {
+	add_submenu_page(
+		'edit.php?post_type=ticket',
+		__( 'Settings', 'eswp' ),
+		__( 'Settings', 'eswp' ),
+		'manage_options',
+		'eswp-options',
+		'eswp_admin_options_page'
+	);
+
+	add_submenu_page(
+		'edit.php?post_type=ticket',
+		__( 'Addons', 'eswp' ),
+		__( 'Addons', 'eswp' ),
+		'manage_options',
+		'eswp-addons',
+		'eswp_admin_options_page'
+	);
+}
+
+add_action( 'admin_menu', 'books_register_ref_page' );
+
+function eswp_admin_options_page() {
+	?>
+    <div class="wrap">
+        <h1 class="wp-heading-inline">
+            Easy Support Options
+        </h1>
+        <a href="#" class="page-title-action">View Documentation</a>
+        <hr class="wp-header-end">
+        <p class="description">
+           Manage Easy Support WP settings.
+        </p>
+        <form>
+            <table class="form-table" role="presentation">
+                <!--<tr>
+                    <th scope="row">Single Ticket Template</th>
+                    <td>
+                        <input type="text" name="" class="regular-text"/>
+                        <p class="description">
+                            Field Description
+                        </p>
+                    </td>
+                </tr>-->
+                <tr>
+                    <th scope="row">Single Ticket Template</th>
+                    <td>
+                        <select name="single-template">
+                            <option>Default Template</option>
+                            <option>Full Width</option>
+                        </select>
+                        <p class="description">
+                            If "Default" is selected, single tickets will use the current themes default template for a
+                            single post. Visit <a href="#">Create Ticket Templates</a> if you wish to customize your
+                            templates.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+			<?php submit_button( 'Save Settings' ); ?>
+        </form>
+    </div>
+	<?php
+}
 
 /**
  * @todo Move this to an admin file somewhere
@@ -128,6 +214,15 @@ function eswp_pre_auth_check_before_template( $template ) {
 
 	return $template;
 }
+
+/**
+ * Rewrite Flush on Activation
+ */
+function eswp_rewrite_flush() {
+	flush_rewrite_rules();
+}
+
+register_activation_hook( __FILE__, 'eswp_rewrite_flush' );
 
 
 /**
