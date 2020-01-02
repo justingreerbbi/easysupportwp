@@ -2,14 +2,21 @@
 <style>
     #eswp-ticket-wrapper {
         box-sizing: border-box;
+        background: #f1f1f1;
+        padding: 1em;
     }
 
-    #eswp-ticket-content-container {
-        padding: 0.5em 0.5em 0.5em 1.5em;
+    #eswp-ticket-content-container,
+    #eswp_ticket_replies {
+        background: #ffffff;
+        background: rgba(255, 255, 255, 0.9);
+        color: #555;
         box-sizing: border-box;
-        color: #000;
+        padding: 1em 1em;
         font-size: 15px;
-        border-left: 3px solid #f1f1f1;
+        border-radius: 2px;
+        border: 1px solid #ccd0d4;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
     }
 
     #eswp-ticket-content-container hr {
@@ -23,7 +30,7 @@
 
     .eswp-ticket-meta-data {
         font-size: 12px;
-        margin: 0;
+        margin: 15px 0px;
     }
 
     .eswp-hr {
@@ -43,9 +50,11 @@
     <div class="eswp-ticket-meta-data">
         Created: <strong><?php print date( "F jS, Y g:i:s A", strtotime( $post->post_date ) ); ?></strong>
     </div>
-    <hr class="eswp-hr"/>
     <div id="eswp-ticket-content-container">
+        --<br/>
 		<?php echo $post->post_content; ?>
+        <br/>
+        ----
     </div>
     <div class="ticket-controls">
         <a href="#">Close Ticket</a> -
@@ -59,37 +68,45 @@
 
         .eswp-single-reply-wrapper {
             position: relative;
-            border-bottom: 1px solid #f1f1f1;
+            border: 1px solid #ccc;
             padding-bottom: 2em;
+            background: #f1f1f1;
+            margin-bottom: 1em;
+            padding: 5px;
+            box-sizing: border-box;
         }
 
         .eswp-reply-date {
             position: absolute;
             right: 1em;
-            top: 0.4em;
+            top: 0.7em;
             color: #50575d;
         }
 
         .eswp-reply-author {
             display: block;
-            font-size: 0.9rem;
+            font-size: 1.8rem;
             color: #50575d;
+            position: relative;
+            top: 5px;
         }
 
         .eswp-reply-author img {
             position: relative;
-            top: 12px;
+            top: 2px;
         }
 
         .eswp-reply-content {
-            padding-left: 1.6em;
-            margin-top: 1.5em;
-            border-left: solid 1px orange;
+            padding: 0 0.3em;
+            border-top: 1px solid #555;
+            padding-top: 1rem;
+            padding-bottom: 14px;
+            margin-top: 10px;
+            /*background: #FFF;*/
         }
 
         #eswp-ticket-reply-editor {
             background: #f1f1f1;
-            padding: 1.5em;
             box-sizing: border-box;
         }
 
@@ -102,15 +119,18 @@
         }
 
         .eswp-description {
-            font-size: 0.8rem;
+            font-size: 1.3rem;
             color: #555;
             margin-top: 1em;
         }
     </style>
 
-    <hr/>
-    <h3 style="background: #000; color: #FFF; padding: 10px 15px;">Support Ticket Replies</h3>
+    <hr class="eswp-hr"/>
     <div id="eswp_ticket_replies">
+        <h5 class="eswp-ticket-title">Replies</h5>
+        <div class="eswp-ticket-meta-data">
+            Created: <strong><?php print date( "F jS, Y g:i:s A", strtotime( $post->post_date ) ); ?></strong>
+        </div>
 		<?php
 		$replies = get_comments( array( 'post_id' => $post->ID ) );
 		foreach ( $replies as $reply ):
@@ -119,7 +139,7 @@
             <div class="eswp-single-reply-wrapper <?php echo $reply->comment_type; ?>">
                 <small class="eswp-reply-date"><?php print date( 'M jS, Y g:i:s A', strtotime( $reply->comment_date ) ); ?></small>
                 <div class="eswp-reply-author">
-                    <img src="https://www.gravatar.com/avatar/<?php echo $email_hash; ?>?s=30" width="30"
+                    <img src="https://www.gravatar.com/avatar/<?php echo $email_hash; ?>?s=25" width="25"
                          style="border-radius: 50%;"/>
                     <small><?php echo $reply->comment_author; ?> (Support)</small>
                 </div>
@@ -131,9 +151,11 @@
 		<?php endforeach; ?>
     </div>
 
+    <hr class="eswp-hr"/>
+    <br/>
     <form method="post">
         <div id="eswp-ticket-reply-editor">
-            <h3 class="eswp-ticket-title">Reply to this Support Ticket</h3>
+            <h5 class="eswp-ticket-title">Reply to this Support Ticket</h5>
             <p class="eswp-description">
                 HTML and special characters are not allow. If you need to share code snippets, please use a pastebin
                 service and share the link.

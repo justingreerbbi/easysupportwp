@@ -18,13 +18,13 @@ function eswp_date_diff( $date1, $date2 = '' ) {
 	$start_date  = new DateTime( $date1 );
 	$since_start = $start_date->diff( new DateTime( current_time( 'mysql' ) ) );
 	if ( $since_start->i > 60 && $since_start->d < 1 ) {
-		return $since_start->h . ' Hrs';
+		return $since_start->h . ' Hr(s)';
 	} elseif ( $since_start->d > 0 ) {
-		return $since_start->d . ' Days';
+		return $since_start->d . ' Day(s)';
 	}
 
 	// Default to Mins
-	return $since_start->i . ' Mins';
+	return $since_start->i . ' Min(s)';
 }
 
 /**
@@ -41,6 +41,43 @@ function eswp_get_ticket_status( $status ) {
 
 	return $statues[ $status ];
 }
+
+/**
+ * Return a class for a given ticket status. This mainly controls the css colors needed for status. It will be up to
+ * the developers to decide what to do with this.
+ *
+ * @param $status
+ */
+function eswp_get_ticket_status_class( $status ) {
+
+
+	$styles = array(
+		'awaiting_response' => 'awaiting_response_class',
+		'needs_reply'       => 'needs_reply_class',
+		'new'               => 'new_class',
+		'closed'            => 'closed_class'
+	);
+
+	if ( ! array_key_exists( $status, $styles ) ) {
+		return;
+	}
+
+	return $styles[ $status ];
+}
+
+/**
+ * Check the status of a ticket. This reflects and is a proxy for get_post_status() wp's core
+ *
+ * @param $post_id
+ *
+ * @return false|string
+ */
+function eswp_is_ticket_open( $post_id ) {
+	$ticket_status = get_post_status( $post_id );
+
+	return $ticket_status;
+}
+
 
 /**
  * Simple check at the content level for authorization

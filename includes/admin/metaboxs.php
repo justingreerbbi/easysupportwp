@@ -146,10 +146,17 @@ function eswp_ticket_replies_content( $post ) {
     </div>
 
     <div id="major-publishing-actions">
+
         <div id="delete-action">
-            <a class="submitdelete deletion" href="#">
-                Re-open
-            </a>
+			<?php if ( eswp_is_ticket_open( $post->ID ) != false ): ?>
+                <a class="submitdelete deletion" href="#">
+                    Close Ticket
+                </a>
+			<?php else: ?>
+                <a class="submitdelete deletion" href="#">
+                    Reopen Ticket
+                </a>
+			<?php endif; ?>
         </div>
 
         <div id="publishing-action">
@@ -183,18 +190,32 @@ function easy_support_ticket_ticket_info_meta_box() {
 
 function easy_support_ticket_ticket_info_meta_box_content( $post ) {
 	?>
+    <style>
+        .awaiting_response_class {
+            background: #58B19F;
+            color: #FFF;
+        }
+        .needs_reply_class {
+            background: #EAB543;
+            color: #FFF;
+        }
+        .new_class {
+            background: #55E6C1;
+        }
+    </style>
     <div class="eswp_main_ticket_info_container submitbox">
 
         <!-- DEFAULT WP STYLING -->
         <div id="misc-publishing-actions">
             <div class="misc-pub-section">
                 Status: <span
-                        style="background: #f1f1f1; padding: 5px 10px; border-radius: 3px;"><?php echo eswp_get_ticket_status( get_post_meta( $post->ID, 'ticket_status', true ) ); ?></span>
+                        class="<?php print eswp_get_ticket_status_class( get_post_meta( $post->ID, 'ticket_status', true ) ); ?>"
+                        style="padding: 5px 10px; border-radius: 3px;"><?php echo eswp_get_ticket_status( get_post_meta( $post->ID, 'ticket_status', true ) ); ?></span>
             </div>
 
             <div class="misc-pub-section">
 	            <span id="timestamp">
-                    Ticket Age: <strong><?php print eswp_date_diff(date( "F jS, Y g:i:s A", strtotime( $post->post_date ) ) ); ?></strong>
+                    Ticket Age: <strong><?php print eswp_date_diff( date( "F jS, Y g:i:s A", strtotime( $post->post_date ) ) ); ?></strong>
                 </span>
             </div>
             <div class="misc-pub-section">
@@ -205,16 +226,23 @@ function easy_support_ticket_ticket_info_meta_box_content( $post ) {
         </div>
 
         <div id="major-publishing-actions">
+
             <div id="delete-action">
-                <a class="submitdelete deletion" href="#">
-                    Re-open
-                </a>
+				<?php if ( eswp_is_ticket_open( $post->ID ) != false ): ?>
+                    <a class="submitdelete deletion" href="#">
+                        Close Ticket
+                    </a>
+				<?php else: ?>
+                    <a class="submitdelete deletion" href="#">
+                        Reopen Ticket
+                    </a>
+				<?php endif; ?>
             </div>
 
             <div id="publishing-action">
                 <span class="spinner"></span>
                 <input name="original_publish" type="hidden" id="original_publish" value="Updating">
-                <input type="submit" name="publish" id="publish" class="button button-primary button-large"
+                <input type="submit" name="publish" id="" class="button button-primary button-large"
                        value="Update Ticket" accesskey="u">
             </div>
             <div class="clear"></div>
